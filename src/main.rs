@@ -1,42 +1,82 @@
-use iced::widget::{button, column, container, row, text, Column, Container, Row};
-use iced::{Center, Fill};
+use std::collections::HashMap;
+use std::path::Path;
+
+use iced::widget::{button, column, container, row, text, text_input, Column, Container, Row};
+use iced::{Center, Element, Fill};
 
 pub fn main() -> iced::Result {
-    iced::run("A cool counter", Counter::update, Counter::view)
+    iced::run(
+        "A cool counter",
+        AccurateRecipe::update,
+        AccurateRecipe::view,
+    )
 }
 
 #[derive(Default)]
-struct Counter {
+struct AccurateRecipe {
     value: i64,
+    search_content: String,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Default, Clone, Debug)]
+struct Recipe {
+    name: String,
+    ingredients: HashMap<String, f64>,
+    instructions: Vec<String>,
+    picture: String,
+}
+
+#[derive(Debug, Clone)]
 enum Message {
-    Increment,
-    Decrement,
+    Previous,
+    Next,
+    InputChanged(String),
+    Search,
 }
 
-impl Counter {
+impl AccurateRecipe {
     fn update(&mut self, message: Message) {
         match message {
-            Message::Increment => {
+            Message::Previous => {
                 self.value += 1;
             }
-            Message::Decrement => {
+            Message::Next => {
                 self.value -= 1;
+            }
+            Message::InputChanged(content) => {
+                self.search_content = content;
+            }
+            Message::Search => {
+                todo!("Search through recipe hashmap");
             }
         }
     }
 
-    fn view(&self) -> Container<Message> {
+    fn view(&self) -> Element<Message> {
+        let nav_bar: Row<Message> = row![
+            button("<-").on_press(Message::Previous),
+            text_input("search", "")
+                .on_input(Message::InputChanged)
+                .on_submit(Message::Search),
+            button("->").on_press(Message::Next)
+        ];
+
+        let body_placeholder: Row<Message> =
+            row![text(self.value).size(50), text(self.value).size(50)];
+
+        let footer_placeholder: Row<Message> = row![
+            button("<<").on_press(Message::Previous),
+            text("Recipe Name")
+                .height(50)
+                .align_x(Center)
+                .align_y(Center),
+            button(">>").on_press(Message::Next)
+        ];
+
         container(row![
-            column![
-                button("Increment").on_press(Message::Increment),
-                text(self.value).size(50),
-                button("Decrement").on_press(Message::Decrement),
-            ]
-            .padding(20)
-            .align_x(Center),
+            column![nav_bar, body_placeholder, footer_placeholder]
+                .padding(20)
+                .align_x(Center),
             row!["Left", "Right"].padding(20).align_y(Center),
         ])
         .padding(10)
