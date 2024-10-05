@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use iced::widget::{button, column, container, image, row, text, text_input, Row};
-use iced::{window, Bottom, Center, Element, Fill, Settings, Top};
+use iced::{Bottom, Center, Element, Fill, Settings, Top};
+use serde::{Deserialize, Serialize};
 
 const APP_NAME: &str = "AccurateRecipe";
 
@@ -24,13 +25,14 @@ struct AccurateRecipe {
     recipes: Vec<Recipe>,
 }
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Deserialize, Serialize)]
 struct Recipe {
+    // todo add #[serde(rename)] and new() for application that readsfile path
     name: String,
     portions: u32,
     ingredients: HashMap<String, f64>,
     instructions: Vec<String>,
-    picture: String,
+    image: String,
 }
 
 #[derive(Debug, Clone)]
