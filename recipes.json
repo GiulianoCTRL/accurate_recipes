@@ -1,0 +1,24 @@
+{
+  "Belgian Waffles":
+    {
+      "Ingredients":
+        {
+          "Flour": 210,
+          "Yeast (Dry)": 5,
+          "Salt": 3,
+          "Eggs": 110,
+          "Milk": 400,
+          "Butter (melted)": 100,
+        },
+      "Instructions":
+        [
+          "Mix dry yeast with lukewarm water.",
+          "Combine dry ingredients.",
+          "Mix eggs and butter into yeast-water mix.",
+          "Combine wet and dry ingredients.",
+          "Let dough raise for an hour in the oven with only the oven lamp on.",
+          "Add dough into waffle iron and bake/cook for ca. eight minutes.",
+        ],
+      "Image": "placeholder.jpg",
+    },
+}

@@ -1,14 +1,20 @@
 use std::collections::HashMap;
 
-use iced::widget::{button, column, container, row, text, text_input, Row};
-use iced::{Bottom, Center, Element, Fill, Top};
+use iced::widget::{button, column, container, image, row, text, text_input, Row};
+use iced::{window, Bottom, Center, Element, Fill, Settings, Top};
+
+const APP_NAME: &str = "AccurateRecipe";
 
 pub fn main() -> iced::Result {
-    iced::run(
-        "AccurateRecipe",
-        AccurateRecipe::update,
-        AccurateRecipe::view,
-    )
+    iced::application(APP_NAME, AccurateRecipe::update, AccurateRecipe::view)
+        .settings(Settings {
+            id: Some(String::from(APP_NAME)),
+            antialiasing: true,
+            ..Settings::default()
+        })
+        .antialiasing(true)
+        .centered()
+        .run()
 }
 
 #[derive(Default)]
@@ -63,21 +69,26 @@ impl AccurateRecipe {
             button("→").on_press(Message::Next)
         ];
 
-        let body_placeholder: Row<Message> =
-            row![text(self.value).size(50), text(self.value).size(50)];
+        let body_placeholder: Row<Message> = row![
+            column![
+                container("Ingredients").width(Fill).height(Fill),
+                container("Instructions").width(Fill).height(Fill)
+            ],
+            image("placeholder.jpg").width(Fill)
+        ];
 
         let footer_placeholder: Row<Message> = row![
-            button("<<").on_press(Message::Previous),
+            text("0"),
             text("Recipe Name")
-                .height(50)
                 .align_x(Center)
-                .align_y(Center),
-            button(">>").on_press(Message::Next)
+                .align_y(Center)
+                .width(Fill),
+            text("2")
         ];
 
         container(row![column![
-            nav_bar.align_y(Top).padding(50),
-            body_placeholder.align_y(Center).padding(100),
+            nav_bar.align_y(Top).padding(10).width(Fill),
+            body_placeholder.align_y(Center).padding(10),
             footer_placeholder.align_y(Bottom)
         ]
         .padding(20)
