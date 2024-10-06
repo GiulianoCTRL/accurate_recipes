@@ -30,8 +30,14 @@ impl Recipe {
     fn ingredients_to_string(&self) -> String {
         todo!()
     }
-    fn instruction_to_string(&self) -> String {
-        todo!()
+
+    fn instructions_to_string(&self) -> String {
+        let mut instructions = String::new();
+
+        for (i, s) in self.instructions.iter().enumerate() {
+            instructions.push_str(&format!("{i}. {s}\n"));
+        }
+        instructions
     }
 }
 fn recipes_from_file(filename: &str) -> Result<Vec<Recipe>, std::io::Error> {
@@ -97,16 +103,16 @@ impl AccurateRecipe {
             button("→").on_press(Message::Next)
         ];
 
+        let current_recipe: &Recipe = &self.recipes[self.page];
+        let instructions = current_recipe.instructions_to_string();
         let body_placeholder: Row<Message> = row![
             column![
                 container(column!["Ingredients", "lorem ipsum"])
                     .width(Fill)
                     .height(Fill),
-                container(column!["Instructions", "lorem ipsum"])
-                    .width(Fill)
-                    .height(Fill)
+                container("Instructions").width(Fill).height(Fill)
             ],
-            image(&self.recipes[self.page].image).width(Fill)
+            image(&current_recipe.image).width(Fill)
         ];
 
         let previous_page = if self.page > 0 {
@@ -121,7 +127,7 @@ impl AccurateRecipe {
         };
         let footer_placeholder: Row<Message> = row![
             text(previous_page),
-            text(&self.recipes[self.page].name)
+            text(&current_recipe.name)
                 .align_x(Center)
                 .align_y(Center)
                 .width(Fill),
