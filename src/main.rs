@@ -1,10 +1,5 @@
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
-
 use iced::widget::{button, column, container, image, row, text, text_input, Row};
 use iced::{Bottom, Center, ContentFit, Element, Fill, Task, Top};
-use serde::{Deserialize, Serialize};
 
 const APP_NAME: &str = "AccurateRecipe";
 const RECIPE_FILE: &str = "recipes.json";
@@ -15,45 +10,13 @@ pub fn main() -> iced::Result {
         .run_with(AccurateRecipe::new)
 }
 
-#[derive(Default, Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
-struct Recipe {
-    name: String,
-    portions: u32,
-    ingredients: HashMap<String, u32>,
-    instructions: Vec<String>,
-    image: String,
-}
-
-impl Recipe {
-    fn ingredients_to_string(&self) -> String {
-        let mut ingredients = String::from("Ingredients\n---------------\n");
-
-        for (k, v) in self.ingredients.iter() {
-            ingredients.push_str(&format!("{k}: {v} g\n"));
-        }
-        ingredients
-    }
-
-    fn instructions_to_string(&self) -> String {
-        let mut instructions = String::from("Instructions\n---------------\n");
-
-        for (i, s) in self.instructions.iter().enumerate() {
-            let i = i + 1;
-            instructions.push_str(&format!("{i}. {s}\n"));
-        }
-        instructions
-    }
-}
-fn recipes_from_file(filename: &str) -> Result<Vec<Recipe>, std::io::Error> {
-    let recipes: Vec<Recipe> = serde_json::from_reader(BufReader::new(File::open(filename)?))?;
-    Ok(recipes)
-}
+mod cook;
 
 #[derive(Default)]
 struct AccurateRecipe {
     page: usize,
     input_value: String,
-    recipes: Vec<Recipe>,
+    recipes: Vec<cook::Recipe>,
 }
 
 #[derive(Debug, Clone)]
@@ -70,7 +33,7 @@ impl AccurateRecipe {
             AccurateRecipe {
                 page: 0,
                 input_value: String::from(""),
-                recipes: recipes_from_file(RECIPE_FILE).unwrap(),
+                recipes: cook::recipes_from_file(RECIPE_FILE).unwrap(),
             },
             Task::none(),
         )
@@ -107,7 +70,7 @@ impl AccurateRecipe {
             button("→").on_press(Message::Next)
         ];
 
-        let current_recipe: &Recipe = &self.recipes[self.page];
+        let current_recipe: &cook::Recipe = &self.recipes[self.page];
         let body: Row<Message> = row![
             column![
                 container(text(current_recipe.ingredients_to_string()))
@@ -157,7 +120,7 @@ impl AccurateRecipe {
 
 #[test]
 fn it_counts_properly() {
-    let recipes = vec![Recipe {
+    let recipes = vec![cook::Recipe {
         name: String::from("test"),
         ..Default::default()
     }];
