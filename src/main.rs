@@ -1,11 +1,9 @@
 use std::collections::HashMap;
-use std::error::Error;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::Path;
 
 use iced::widget::{button, column, container, image, row, text, text_input, Row};
-use iced::{Bottom, Center, Element, Fill, Task, Top};
+use iced::{Bottom, Center, ContentFit, Element, Fill, Task, Top};
 use serde::{Deserialize, Serialize};
 
 const APP_NAME: &str = "AccurateRecipe";
@@ -28,13 +26,19 @@ struct Recipe {
 
 impl Recipe {
     fn ingredients_to_string(&self) -> String {
-        todo!()
+        let mut ingredients = String::from("Ingredients\n---------------\n");
+
+        for (k, v) in self.ingredients.iter() {
+            ingredients.push_str(&format!("{k}: {v} g\n"));
+        }
+        ingredients
     }
 
     fn instructions_to_string(&self) -> String {
-        let mut instructions = String::new();
+        let mut instructions = String::from("Instructions\n---------------\n");
 
         for (i, s) in self.instructions.iter().enumerate() {
+            let i = i + 1;
             instructions.push_str(&format!("{i}. {s}\n"));
         }
         instructions
@@ -80,7 +84,7 @@ impl AccurateRecipe {
                 }
             }
             Message::Next => {
-                if self.page < self.recipes.len() {
+                if self.page < self.recipes.len() && self.recipes.len() != 1 {
                     self.page += 1;
                 }
             }
@@ -104,15 +108,18 @@ impl AccurateRecipe {
         ];
 
         let current_recipe: &Recipe = &self.recipes[self.page];
-        let instructions = current_recipe.instructions_to_string();
-        let body_placeholder: Row<Message> = row![
+        let body: Row<Message> = row![
             column![
-                container(column!["Ingredients", "lorem ipsum"])
+                container(text(current_recipe.ingredients_to_string()))
                     .width(Fill)
                     .height(Fill),
-                container("Instructions").width(Fill).height(Fill)
+                container(text(current_recipe.instructions_to_string()))
+                    .width(Fill)
+                    .height(Fill)
             ],
-            image(&current_recipe.image).width(Fill)
+            image(&current_recipe.image)
+                .width(Fill)
+                .content_fit(ContentFit::Fill)
         ];
 
         let previous_page = if self.page > 0 {
@@ -120,12 +127,12 @@ impl AccurateRecipe {
         } else {
             0.to_string()
         };
-        let next_page = if self.page == self.recipes.len() {
-            "end".to_string()
+        let next_page = if self.page == (self.recipes.len() - 1) {
+            "".to_string()
         } else {
             (self.page + 1).to_string()
         };
-        let footer_placeholder: Row<Message> = row![
+        let footer: Row<Message> = row![
             text(previous_page),
             text(&current_recipe.name)
                 .align_x(Center)
@@ -136,8 +143,8 @@ impl AccurateRecipe {
 
         container(row![column![
             nav_bar.align_y(Top).padding(10).width(Fill),
-            body_placeholder.align_y(Center).padding(10),
-            footer_placeholder.align_y(Bottom)
+            body.align_y(Center).padding(10),
+            footer.align_y(Bottom)
         ]
         .padding(20)
         .align_x(Center),])
@@ -185,3 +192,6 @@ fn recipes_read_correctly() {
     let result = recipes_from_file(filename).unwrap();
     assert_eq!(expected[0], result[0]);
 }
+
+// TODO: more tests and separating modules.
+// Add "Add recipe button", safe to unwrapinitialation function.
