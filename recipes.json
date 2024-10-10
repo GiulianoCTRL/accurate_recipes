@@ -1,14 +1,14 @@
 [
   {
     "name": "Belgian Waffles",
-    "portions": 4,
+    "portions": 4.0,
     "ingredients": {
-      "Flour": 210,
-      "Yeast (Dry)": 5,
-      "Salt": 3,
-      "Eggs": 110,
-      "Milk": 400,
-      "Butter (melted)": 100
+      "Flour": 210.0,
+      "Yeast (Dry)": 5.0,
+      "Salt": 3.0,
+      "Eggs": 110.0,
+      "Milk": 400.0,
+      "Butter (melted)": 100.0
     },
     "instructions": [
       "Mix dry yeast with lukewarm water.",

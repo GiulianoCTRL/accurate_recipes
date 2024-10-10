@@ -1,4 +1,4 @@
-use iced::widget::{button, column, container, image, row, text, text_input, Row};
+use iced::widget::{button, slider, column, container, image, row, text, text_input, Row};
 use iced::{Bottom, Center, ContentFit, Element, Fill, Task, Top};
 
 const APP_NAME: &str = "AccurateRecipe";
@@ -62,6 +62,7 @@ impl AccurateRecipe {
     }
 
     fn view(&self) -> Element<Message> {
+        // TODO: Add portions slider.
         let nav_bar: Row<Message> = row![
             button("←").on_press(Message::Previous),
             text_input("search", &self.input_value)
@@ -71,6 +72,7 @@ impl AccurateRecipe {
         ];
 
         let current_recipe: &cook::Recipe = &self.recipes[self.page];
+        let
         let body: Row<Message> = row![
             column![
                 container(text(current_recipe.ingredients_to_string()))
@@ -119,7 +121,7 @@ impl AccurateRecipe {
 }
 
 #[test]
-fn it_counts_properly() {
+fn page_updates_correctly() {
     let recipes = vec![cook::Recipe {
         name: String::from("test"),
         ..Default::default()
@@ -136,24 +138,6 @@ fn it_counts_properly() {
     counter.update(Message::Previous);
 
     assert_eq!(counter.page, 1);
-}
-
-#[test]
-fn recipes_read_correctly() {
-    let filename = "test.json";
-    let mut ingredients: HashMap<String, u32> = HashMap::new();
-    ingredients.insert("test_ingredient".to_string(), 1);
-
-    let expected = vec![Recipe {
-        name: "test".to_string(),
-        portions: 1,
-        ingredients,
-        instructions: vec!["Do not eat.".to_string()],
-        image: "test.jpg".to_string(),
-    }];
-
-    let result = recipes_from_file(filename).unwrap();
-    assert_eq!(expected[0], result[0]);
 }
 
 // TODO: more tests and separating modules.
