@@ -50,7 +50,7 @@ impl AccurateRecipe {
                 }
             }
             Message::Next => {
-                if self.page < self.recipes.len() && self.recipes.len() != 1 {
+                if self.page < (self.recipes.len() - 1) {
                     self.page += 1;
                 }
             }
