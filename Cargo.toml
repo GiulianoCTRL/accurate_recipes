@@ -1,5 +1,5 @@
 [package]
-name = "gui_app"
+name = "accurate_recipe"
 version = "0.1.0"
 edition = "2021"
 

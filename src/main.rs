@@ -10,14 +10,14 @@ pub fn main() -> iced::Result {
         .run_with(AccurateRecipe::new)
 }
 
-mod cook;
+use accurate_recipe;
 
 #[derive(Default)]
 struct AccurateRecipe {
     page: usize,
     search_value: String,
     portion_multiplier: f32,
-    recipes: Vec<cook::Recipe>,
+    recipes: Vec<accurate_recipe::Recipe>,
 }
 
 #[derive(Debug, Clone)]
@@ -36,7 +36,7 @@ impl AccurateRecipe {
                 page: 0,
                 portion_multiplier: 1.0,
                 search_value: String::from(""),
-                recipes: cook::recipes_from_file(RECIPE_FILE).unwrap(),
+                recipes: accurate_recipe::recipes_from_file(RECIPE_FILE).unwrap(),
             },
             Task::none(),
         )
@@ -77,11 +77,11 @@ impl AccurateRecipe {
             button("→").on_press(Message::Next)
         ];
 
-        let current_recipe: &cook::Recipe = &self.recipes[self.page];
+        let current_recipe: &accurate_recipe::Recipe = &self.recipes[self.page];
         let body: Row<Message> = row![
             column![
                 column![
-                    slider(0.5..=10.0, self.portion_multiplier, Message::PortionChanged),
+                    slider(1.0..=10.0, self.portion_multiplier, Message::PortionChanged),
                     Space::new(0, 10),
                     text(current_recipe.portions_multiplied_to_string(self.portion_multiplier)),
                     Space::new(0, 30),
@@ -135,7 +135,7 @@ impl AccurateRecipe {
 
 #[test]
 fn page_updates_correctly() {
-    let recipes = vec![cook::Recipe::default_with_name("test")];
+    let recipes = vec![accurate_recipe::Recipe::default_with_name("test")];
 
     let mut counter = AccurateRecipe {
         page: 0,

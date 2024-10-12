@@ -18,6 +18,23 @@
       "Let dough raise for an hour in the oven with only the oven lamp on.",
       "Add dough into waffle iron and bake/cook for ca. eight minutes."
     ],
-    "image": "Belgian Waffles.jpg"
+    "image": "images/Belgian Waffles.jpg"
+  },
+  {
+    "name": "Banana Muffins",
+    "portions": 2.0,
+    "ingredients": {
+      "Oats": 100.0,
+      "Bananas": 250.0,
+      "Milk": 150.0,
+      "Baking Powder": 5.0
+    },
+    "instructions": [
+      "Mush Bananas.",
+      "Blend oats into flour.",
+      "Mix all ingredients.",
+      "Bake 20 min on 180 degrees C."
+    ],
+    "image": "images/Banana Muffins.jpg"
   }
 ]

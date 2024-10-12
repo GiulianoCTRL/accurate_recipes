@@ -82,7 +82,7 @@ fn recipes_read_correctly() {
         portions: 1.0,
         ingredients,
         instructions: vec!["Do not eat.".to_string()],
-        image: "test.jpg".to_string(),
+        image: "images/test.jpg".to_string(),
     }];
 
     let result = recipes_from_file(filename).unwrap();
