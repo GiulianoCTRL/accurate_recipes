@@ -1,4 +1,4 @@
-use iced::widget::{button, slider, column, container, image, row, text, text_input, Row};
+use iced::widget::{button, column, container, image, row, slider, text, text_input, Row, Space};
 use iced::{Bottom, Center, ContentFit, Element, Fill, Task, Top};
 
 const APP_NAME: &str = "AccurateRecipe";
@@ -15,7 +15,8 @@ mod cook;
 #[derive(Default)]
 struct AccurateRecipe {
     page: usize,
-    input_value: String,
+    search_value: String,
+    portion_multiplier: f32,
     recipes: Vec<cook::Recipe>,
 }
 
@@ -23,7 +24,8 @@ struct AccurateRecipe {
 enum Message {
     Previous,
     Next,
-    InputChanged(String),
+    SearchChanged(String),
+    PortionChanged(f32),
     Search,
 }
 
@@ -32,7 +34,8 @@ impl AccurateRecipe {
         (
             AccurateRecipe {
                 page: 0,
-                input_value: String::from(""),
+                portion_multiplier: 1.0,
+                search_value: String::from(""),
                 recipes: cook::recipes_from_file(RECIPE_FILE).unwrap(),
             },
             Task::none(),
@@ -51,12 +54,15 @@ impl AccurateRecipe {
                     self.page += 1;
                 }
             }
-            Message::InputChanged(value) => {
-                self.input_value = value;
+            Message::SearchChanged(value) => {
+                self.search_value = value;
             }
             Message::Search => {
                 println!("Search through recipe hashmap");
-                self.input_value.clear();
+                self.search_value.clear();
+            }
+            Message::PortionChanged(value) => {
+                self.portion_multiplier = value;
             }
         }
     }
@@ -65,19 +71,26 @@ impl AccurateRecipe {
         // TODO: Add portions slider.
         let nav_bar: Row<Message> = row![
             button("←").on_press(Message::Previous),
-            text_input("search", &self.input_value)
-                .on_input(Message::InputChanged)
+            text_input("search", &self.search_value)
+                .on_input(Message::SearchChanged)
                 .on_submit(Message::Search),
             button("→").on_press(Message::Next)
         ];
 
         let current_recipe: &cook::Recipe = &self.recipes[self.page];
-        let
         let body: Row<Message> = row![
             column![
-                container(text(current_recipe.ingredients_to_string()))
-                    .width(Fill)
-                    .height(Fill),
+                column![
+                    slider(0.5..=10.0, self.portion_multiplier, Message::PortionChanged),
+                    Space::new(0, 10),
+                    text(current_recipe.portions_multiplied_to_string(self.portion_multiplier)),
+                    Space::new(0, 30),
+                ],
+                container(text(
+                    current_recipe.ingredients_multiplied_to_string(self.portion_multiplier)
+                ))
+                .width(Fill)
+                .height(Fill),
                 container(text(current_recipe.instructions_to_string()))
                     .width(Fill)
                     .height(Fill)
@@ -122,14 +135,12 @@ impl AccurateRecipe {
 
 #[test]
 fn page_updates_correctly() {
-    let recipes = vec![cook::Recipe {
-        name: String::from("test"),
-        ..Default::default()
-    }];
+    let recipes = vec![cook::Recipe::default_with_name("test")];
 
     let mut counter = AccurateRecipe {
         page: 0,
-        input_value: String::from("Test"),
+        portion_multiplier: 1.0,
+        search_value: String::from("Test"),
         recipes,
     };
 

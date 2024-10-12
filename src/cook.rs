@@ -3,21 +3,48 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 
-#[derive(Default, Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Recipe {
     pub name: String,
     // todo implement Eq for
-    pub portions: f32,
-    pub ingredients: HashMap<String, f32>,
+    portions: f32,
+    ingredients: HashMap<String, f32>,
     pub instructions: Vec<String>,
     pub image: String,
 }
 
+impl Default for Recipe {
+    fn default() -> Self {
+        Recipe {
+            name: "".to_string(),
+            portions: 0.0,
+            ingredients: HashMap::new(),
+            instructions: Vec::new(),
+            image: "".to_string(),
+        }
+    }
+}
+
 impl Recipe {
-    pub fn ingredients_to_string(&self) -> String {
+    #[allow(dead_code)]
+    pub fn default_with_name(name: &str) -> Self {
+        Recipe {
+            name: name.to_string(),
+            ..Default::default()
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn add_ingredient(&mut self, ingredient: &str, weight_in_grams: f32) {
+        self.ingredients
+            .insert(ingredient.to_string(), weight_in_grams);
+    }
+
+    pub fn ingredients_multiplied_to_string(&self, multiplier: f32) -> String {
         let mut ingredients = String::from("Ingredients\n---------------\n");
 
         for (k, v) in self.ingredients.iter() {
+            let v = *v * multiplier;
             ingredients.push_str(&format!("{k}: {v} g\n"));
         }
         ingredients
@@ -33,11 +60,9 @@ impl Recipe {
         instructions
     }
 
-    pub fn update_portions(&mut self, multiplier: f32) {
-        self.portions *= multiplier;
-        for v in self.ingredients.values_mut() {
-            *v *= multiplier;
-        }
+    pub fn portions_multiplied_to_string(&self, multiplier: f32) -> String {
+        let portions = self.portions * multiplier;
+        format!("Portions: {portions}")
     }
 }
 
