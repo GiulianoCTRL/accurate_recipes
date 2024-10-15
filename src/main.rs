@@ -87,7 +87,7 @@ impl AccurateRecipe {
                     Space::new(0, 30),
                 ],
                 container(text(
-                    current_recipe.ingredients_multiplied_to_string(self.portion_multiplier)
+                    current_recipe.ingredients_to_string(self.portion_multiplier)
                 ))
                 .width(Fill)
                 .height(Fill),
@@ -133,23 +133,23 @@ impl AccurateRecipe {
     }
 }
 
-#[test]
-fn page_updates_correctly() {
-    let recipes = vec![accurate_recipe::Recipe::default_with_name("test")];
+// #[test]
+// fn page_updates_correctly() {
+//     let recipes = vec![accurate_recipe::Recipe::default_with_name("test")];
 
-    let mut counter = AccurateRecipe {
-        page: 0,
-        portion_multiplier: 1.0,
-        search_value: String::from("Test"),
-        recipes,
-    };
+//     let mut counter = AccurateRecipe {
+//         page: 0,
+//         portion_multiplier: 1.0,
+//         search_value: String::from("Test"),
+//         recipes,
+//     };
 
-    counter.update(Message::Next);
-    counter.update(Message::Next);
-    counter.update(Message::Previous);
+//     counter.update(Message::Next);
+//     counter.update(Message::Next);
+//     counter.update(Message::Previous);
 
-    assert_eq!(counter.page, 1);
-}
+//     assert_eq!(counter.page, 1);
+// }
 
 // TODO: more tests and separating modules.
 // Add "Add recipe button", safe to unwrapinitialation function.

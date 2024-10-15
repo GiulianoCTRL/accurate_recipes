@@ -6,6 +6,6 @@
       "test_ingredient": 1
     },
     "instructions": ["Do not eat."],
-    "image": "test.jpg"
+    "image": "images/test.jpg"
   }
 ]
