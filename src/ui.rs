@@ -132,7 +132,8 @@ mod tests {
 
     #[test]
     fn page_updates_correctly() {
-        let recipes = vec![recipe_with_name("test")];
+        let mut recipes = vec![Recipe::new(), Recipe::new(), Recipe::new()];
+        recipes[0].name = "Test".to_string();
 
         let mut counter = AccurateRecipe {
             page: 0,
@@ -148,6 +149,6 @@ mod tests {
         assert_eq!(counter.page, 1);
     }
 
-    // TODO: more tests and separating modules.
+    // TODO: more tests.
     // Add "Add recipe button", safe to unwrapinitialation function.
 }

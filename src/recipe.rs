@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Default, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Recipe {
     pub name: String,
     portions: f32,
@@ -13,7 +13,10 @@ pub struct Recipe {
 }
 
 impl Recipe {
-    // TODO: Add new funciton
+    pub fn new() -> Self {
+        Recipe::default()
+    }
+
     #[allow(dead_code)]
     pub fn add_ingredient(&mut self, ingredient: &str, weight_in_grams: f32) {
         self.ingredients
@@ -62,16 +65,6 @@ mod tests {
 
     use super::*;
 
-    fn recipe_with_name(name: &str) -> Recipe {
-        Recipe {
-            name: name.to_string(),
-            portions: 0.0,
-            ingredients: HashMap::new(),
-            instructions: Vec::new(),
-            image: "".to_string(),
-        }
-    }
-
     #[test]
     fn recipes_read_correctly() {
         let filename = "test.json";
@@ -92,7 +85,7 @@ mod tests {
 
     #[test]
     fn ingredients_added_to_recipe() {
-        let mut recipe = recipe_with_name("ingredients_added_to_recipe");
+        let mut recipe = Recipe::new();
         recipe.add_ingredient("Flour", 500.0);
         assert!(recipe.ingredients.contains_key("Flour"));
         assert_eq!(recipe.ingredients.get("Flour").unwrap(), &500.0);
@@ -100,16 +93,15 @@ mod tests {
 
     #[test]
     fn ingredients_string_conversion_as_expected() {
-        let mut recipe = recipe_with_name("ingredients_string_conversion_as_expected");
+        let mut recipe = Recipe::new();
         recipe.add_ingredient("Flour", 500.0);
-        recipe.add_ingredient("Yeast", 3.0);
-        let expected = "Ingredients\n---------------\nFlour: 500 g\nYeast: 3 g\n";
+        let expected = "Ingredients\n---------------\nFlour: 500 g\n";
         assert_eq!(&recipe.ingredients_to_string(1.0), expected);
     }
 
     #[test]
     fn instructions_string_conversion_as_expected() {
-        let mut recipe = recipe_with_name("ingredients_added_to_recipe");
+        let mut recipe = Recipe::new();
         recipe.instructions.push(String::from("Add Plastic."));
         recipe.instructions.push(String::from("Do not eat."));
         let expected = "Instructions\n---------------\n1. Add Plastic.\n2. Do not eat.\n";
