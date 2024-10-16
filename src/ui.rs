@@ -4,14 +4,6 @@ use iced::widget::{button, column, container, image, row, slider, text, text_inp
 use iced::{Bottom, Center, ContentFit, Element, Fill, Task, Top};
 const RECIPE_FILE: &str = "recipes.json";
 
-#[derive(Default)]
-pub struct AccurateRecipe {
-    page: usize,
-    search_value: String,
-    portion_multiplier: f32,
-    recipes: Vec<Recipe>,
-}
-
 #[derive(Debug, Clone)]
 pub enum Message {
     Previous,
@@ -19,6 +11,14 @@ pub enum Message {
     SearchChanged(String),
     PortionChanged(f32),
     Search,
+}
+
+#[derive(Default)]
+pub struct AccurateRecipe {
+    page: usize,
+    search_value: String,
+    portion_multiplier: f32,
+    recipes: Vec<Recipe>,
 }
 
 impl AccurateRecipe {
@@ -130,23 +130,37 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn page_updates_correctly() {
+    fn test_app() -> AccurateRecipe {
         let mut recipes = vec![Recipe::new(), Recipe::new(), Recipe::new()];
         recipes[0].name = "Test".to_string();
-
-        let mut counter = AccurateRecipe {
+        AccurateRecipe {
             page: 0,
             portion_multiplier: 1.0,
-            search_value: String::from("Test"),
+            search_value: String::from(""),
             recipes,
-        };
+        }
+    }
 
-        counter.update(Message::Next);
-        counter.update(Message::Next);
-        counter.update(Message::Previous);
+    #[test]
+    fn pages_update_correctly() {
+        let mut page_test = test_app();
 
-        assert_eq!(counter.page, 1);
+        page_test.update(Message::Next);
+        page_test.update(Message::Next);
+        page_test.update(Message::Previous);
+
+        assert_eq!(page_test.page, 1);
+    }
+
+    #[test]
+    fn search_message_updates_search_query() {
+        let mut search_test = test_app();
+
+        let search_value = String::from("test");
+
+        search_test.update(Message::SearchChanged(search_value.clone()));
+
+        assert_eq!(search_test.search_value, search_value.clone());
     }
 
     // TODO: more tests.

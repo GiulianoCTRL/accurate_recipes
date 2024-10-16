@@ -54,6 +54,10 @@ impl Recipe {
     }
 }
 
+pub fn search_recipes_by_name<'a>(recipes: &'a [Recipe], query: &str) -> Option<&'a Recipe> {
+    todo!()
+}
+
 /// Read recipes from file with help of serde_json.
 pub fn recipes_from_file(filename: &str) -> Result<Vec<Recipe>, std::io::Error> {
     let recipes: Vec<Recipe> = serde_json::from_reader(BufReader::new(File::open(filename)?))?;
