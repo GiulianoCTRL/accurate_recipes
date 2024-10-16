@@ -128,4 +128,14 @@ mod tests {
             search_recipes_by_name(&recipes, "Test1")
         );
     }
+
+    #[test]
+    fn unsuccessful_search_returns_empty_vector() {
+        let expected: Vec<&Recipe> = Vec::new();
+        let mut recipes = vec![Recipe::new(); 2];
+        recipes[0].name = String::from("Test123");
+        recipes[1].name = String::from("Test456");
+
+        assert_eq!(expected, search_recipes_by_name(&recipes, "Skkrrrr"));
+    }
 }
