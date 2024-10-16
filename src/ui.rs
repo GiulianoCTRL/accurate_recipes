@@ -131,7 +131,7 @@ mod tests {
     use super::*;
 
     fn test_app() -> AccurateRecipe {
-        let mut recipes = vec![Recipe::new(), Recipe::new(), Recipe::new()];
+        let mut recipes = vec![Recipe::new(); 3];
         recipes[0].name = "Test".to_string();
         AccurateRecipe {
             page: 0,

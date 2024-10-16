@@ -54,8 +54,10 @@ impl Recipe {
     }
 }
 
-pub fn search_recipes_by_name<'a>(recipes: &'a [Recipe], query: &str) -> Option<&'a Recipe> {
-    todo!()
+#[allow(dead_code)]
+/// Search through slice of recipe and return a vector of matching recipes.
+pub fn search_recipes_by_name<'a>(recipes: &'a [Recipe], query: &str) -> Vec<&'a Recipe> {
+    recipes.iter().filter(|r| r.name.contains(query)).collect()
 }
 
 /// Read recipes from file with help of serde_json.
@@ -110,5 +112,20 @@ mod tests {
         recipe.instructions.push(String::from("Do not eat."));
         let expected = "Instructions\n---------------\n1. Add Plastic.\n2. Do not eat.\n";
         assert_eq!(&recipe.instructions_to_string(), expected);
+    }
+
+    #[test]
+    fn search_returns_correct_results() {
+        let mut recipes = vec![Recipe::new(); 5];
+        recipes[0].name = String::from("Test123");
+        recipes[1].name = String::from("Test222");
+        recipes[2].name = String::from("Test333");
+        recipes[3].name = String::from("Test456");
+        recipes[4].name = String::from("Test112");
+
+        assert_eq!(
+            vec![&recipes[0], &recipes[4]],
+            search_recipes_by_name(&recipes, "Test1")
+        );
     }
 }
