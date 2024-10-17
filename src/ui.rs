@@ -1,4 +1,4 @@
-use crate::recipe::recipes_from_file;
+use crate::recipe;
 use crate::Recipe;
 use iced::widget::{button, column, container, image, row, slider, text, text_input, Row, Space};
 use iced::{Bottom, Center, ContentFit, Element, Fill, Task, Top};
@@ -28,7 +28,7 @@ impl AccurateRecipe {
                 page: 0,
                 portion_multiplier: 1.0,
                 search_value: String::from(""),
-                recipes: recipes_from_file(RECIPE_FILE).unwrap(),
+                recipes: recipe::recipes_from_file(RECIPE_FILE).unwrap(),
             },
             Task::none(),
         )
@@ -50,7 +50,11 @@ impl AccurateRecipe {
                 self.search_value = value;
             }
             Message::Search => {
-                println!("Search through recipe hashmap");
+                if let Some((i, _)) =
+                    recipe::search_recipe_by_name(&self.recipes, &self.search_value).last()
+                {
+                    self.page = *i;
+                }
                 self.search_value.clear();
             }
             Message::PortionChanged(value) => {
@@ -131,7 +135,7 @@ mod tests {
     use super::*;
 
     fn test_app() -> AccurateRecipe {
-        let mut recipes = vec![Recipe::new(); 3];
+        let mut recipes = vec![Recipe::default(); 3];
         recipes[0].name = "Test".to_string();
         AccurateRecipe {
             page: 0,

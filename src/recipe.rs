@@ -13,10 +13,6 @@ pub struct Recipe {
 }
 
 impl Recipe {
-    pub fn new() -> Self {
-        Recipe::default()
-    }
-
     #[allow(dead_code)]
     pub fn add_ingredient(&mut self, ingredient: &str, weight_in_grams: f32) {
         self.ingredients
@@ -56,8 +52,15 @@ impl Recipe {
 
 #[allow(dead_code)]
 /// Search through slice of recipe and return a vector of matching recipes.
-pub fn search_recipes_by_name<'a>(recipes: &'a [Recipe], query: &str) -> Vec<&'a Recipe> {
-    recipes.iter().filter(|r| r.name.contains(query)).collect()
+/// For now only the usize of the last returned item is used. Might change once
+/// iced supports multiple windows.
+pub fn search_recipe_by_name<'a>(recipes: &'a [Recipe], query: &str) -> Vec<(usize, &'a Recipe)> {
+    recipes
+        .iter()
+        .enumerate()
+        .filter(|(_, r)| r.name.contains(query))
+        .map(|(i, r)| (i, r))
+        .collect()
 }
 
 /// Read recipes from file with help of serde_json.
@@ -91,7 +94,7 @@ mod tests {
 
     #[test]
     fn ingredients_added_to_recipe() {
-        let mut recipe = Recipe::new();
+        let mut recipe = Recipe::default();
         recipe.add_ingredient("Flour", 500.0);
         assert!(recipe.ingredients.contains_key("Flour"));
         assert_eq!(recipe.ingredients.get("Flour").unwrap(), &500.0);
@@ -99,7 +102,7 @@ mod tests {
 
     #[test]
     fn ingredients_string_conversion_as_expected() {
-        let mut recipe = Recipe::new();
+        let mut recipe = Recipe::default();
         recipe.add_ingredient("Flour", 500.0);
         let expected = "Ingredients\n---------------\nFlour: 500 g\n";
         assert_eq!(&recipe.ingredients_to_string(1.0), expected);
@@ -107,7 +110,7 @@ mod tests {
 
     #[test]
     fn instructions_string_conversion_as_expected() {
-        let mut recipe = Recipe::new();
+        let mut recipe = Recipe::default();
         recipe.instructions.push(String::from("Add Plastic."));
         recipe.instructions.push(String::from("Do not eat."));
         let expected = "Instructions\n---------------\n1. Add Plastic.\n2. Do not eat.\n";
@@ -116,7 +119,7 @@ mod tests {
 
     #[test]
     fn search_returns_correct_results() {
-        let mut recipes = vec![Recipe::new(); 5];
+        let mut recipes = vec![Recipe::default(); 5];
         recipes[0].name = String::from("Test123");
         recipes[1].name = String::from("Test222");
         recipes[2].name = String::from("Test333");
@@ -124,18 +127,18 @@ mod tests {
         recipes[4].name = String::from("Test112");
 
         assert_eq!(
-            vec![&recipes[0], &recipes[4]],
-            search_recipes_by_name(&recipes, "Test1")
+            vec![(0usize, &recipes[0]), (4, &recipes[4])],
+            search_recipe_by_name(&recipes, "Test1")
         );
     }
 
     #[test]
     fn unsuccessful_search_returns_empty_vector() {
-        let expected: Vec<&Recipe> = Vec::new();
-        let mut recipes = vec![Recipe::new(); 2];
+        let expected: Vec<(usize, &Recipe)> = Vec::new();
+        let mut recipes = vec![Recipe::default(); 2];
         recipes[0].name = String::from("Test123");
         recipes[1].name = String::from("Test456");
 
-        assert_eq!(expected, search_recipes_by_name(&recipes, "Skkrrrr"));
+        assert_eq!(expected, search_recipe_by_name(&recipes, "Skkrrrr"));
     }
 }
