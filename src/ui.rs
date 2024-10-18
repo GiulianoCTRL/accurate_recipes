@@ -11,6 +11,7 @@ pub enum Message {
     SearchChanged(String),
     PortionChanged(f32),
     Search,
+    AddRecipePressed,
 }
 
 #[derive(Default)]
@@ -60,17 +61,28 @@ impl AccurateRecipe {
             Message::PortionChanged(value) => {
                 self.portion_multiplier = value;
             }
+            Message::AddRecipePressed => {
+                // Thread currently panics
+                let _app_handle = std::thread::spawn(|| {
+                    iced::run(
+                        "AddRecipeWindow",
+                        AddRecipeWindow::update,
+                        AddRecipeWindow::view,
+                    )
+                    .unwrap()
+                });
+            }
         }
     }
 
     pub fn view(&self) -> Element<Message> {
-        // TODO: Add portions slider.
         let nav_bar: Row<Message> = row![
             button("←").on_press(Message::Previous),
             text_input("search", &self.search_value)
                 .on_input(Message::SearchChanged)
                 .on_submit(Message::Search),
-            button("→").on_press(Message::Next)
+            button("→").on_press(Message::Next),
+            button("+").on_press(Message::AddRecipePressed)
         ];
 
         let current_recipe: &Recipe = &self.recipes[self.page];
@@ -129,6 +141,42 @@ impl AccurateRecipe {
     }
 }
 
+/// Testing opening a second window in different thread for add recipe functionality.
+#[derive(Debug, Default)]
+struct AddRecipeWindow {
+    value: i32,
+}
+
+#[derive(Debug, Clone)]
+enum MessageAddRecipeWindow {
+    Increment,
+    Decrement,
+}
+
+impl AddRecipeWindow {
+    fn update(&mut self, message: MessageAddRecipeWindow) {
+        match message {
+            MessageAddRecipeWindow::Increment => {
+                self.value += 1;
+            }
+            MessageAddRecipeWindow::Decrement => {
+                self.value -= 1;
+            }
+        }
+    }
+
+    fn view(&self) -> Element<MessageAddRecipeWindow> {
+        container(column![
+            button("+").on_press(MessageAddRecipeWindow::Increment),
+            button("-").on_press(MessageAddRecipeWindow::Decrement),
+            text(self.value)
+        ])
+        .center_x(Fill)
+        .center_y(Fill)
+        .into()
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -166,7 +214,4 @@ mod tests {
 
         assert_eq!(search_test.search_value, search_value.clone());
     }
-
-    // TODO: more tests.
-    // Add "Add recipe button", safe to unwrapinitialation function.
 }

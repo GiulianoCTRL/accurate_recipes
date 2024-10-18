@@ -59,7 +59,6 @@ pub fn search_recipe_by_name<'a>(recipes: &'a [Recipe], query: &str) -> Vec<(usi
         .iter()
         .enumerate()
         .filter(|(_, r)| r.name.contains(query))
-        .map(|(i, r)| (i, r))
         .collect()
 }
 
